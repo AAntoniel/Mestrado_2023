@@ -346,15 +346,14 @@ def calhm(dates, title, pdf):
     wrapup(pdf, False)
 
 
-"""#Divisão dos dados de reais e teste para cada modelo"""
+"""#Divisão dos dados reais e teste para cada modelo"""
 
-# df_metrics_lr = pd.read_csv('/content/drive/MyDrive/Dataset/Resultados/output/metrics-LR_2024-04-23-17-15-26.csv')
+
 df_metrics_arima = pd.read_csv("output/metrics-arima_2024-05-20-15-38-45.csv")
 df_metrics_sarima = pd.read_csv("output/metrics-sarima_2024-05-22-09-36-40.csv")
 df_metrics_sarima2 = pd.read_csv("output/metrics-sarima_2024-05-25-01-55-14.csv")
-# df_metrics_lstm = pd.read_csv('/content/drive/MyDrive/Dataset/Resultados/output/metrics-LSTM_2024-04-23-17-22-19.csv')
 
-# df_values_lr = pd.read_csv('/content/drive/MyDrive/Dataset/Resultados/output_ytrue_yhat/results_LR-2024-04-23-17-15-26.csv')
+
 df_values_arima = pd.read_csv("output_ytrue_yhat/results_arima-2024-05-20-15-38-45.csv")
 df_values_sarima = pd.read_csv(
     "output_ytrue_yhat/results_sarima-2024-05-22-09-36-40.csv"
@@ -362,7 +361,7 @@ df_values_sarima = pd.read_csv(
 df_values_sarima2 = pd.read_csv(
     "output_ytrue_yhat/results_sarima-2024-05-25-01-55-14.csv"
 )
-# df_values_lstm = pd.read_csv('/content/drive/MyDrive/Dataset/Resultados/output_ytrue_yhat/results_lstm-2024-04-23-17-22-19.csv')
+
 
 dates = pd.date_range(start="2019-01-01", end="2019-12-31")
 
@@ -425,22 +424,10 @@ pivot_test_ew_sarima = test_ew_sarima.pivot_table(
     values=["ytrue", "yhat"],
 )
 
-# test_ew_lstm['month'] = test_ew_lstm.index.month
-# pivot_test_ew_lstm = test_ew_lstm.pivot_table(index=test_ew_lstm.index.day, columns=test_ew_lstm.index.month, values=['ytrue', 'yhat'])
-
-test_ew_sarima.head()
-
-test_sw2y_arima
-
 """## Calculo dos MAEs por mês"""
 
-# lr_abs = []
 arima_abs = []
 sarima_abs = []
-# lstm_abs = []
-
-# abs_lr = np.abs(test_ew_lr['ytrue'] - test_ew_lr['yhat'])
-# lr_abs.append(abs_lr)
 
 abs_arima = np.abs(test_sw2y_sarima["ytrue"] - test_sw2y_sarima["yhat"])
 arima_abs.append(abs_arima)
@@ -448,10 +435,6 @@ arima_abs.append(abs_arima)
 abs_sarima = np.abs(test_ew_sarima["ytrue"] - test_ew_sarima["yhat"])
 sarima_abs.append(abs_sarima)
 
-# abs_lstm = np.abs(test_ew_lstm['ytrue'] - test_ew_lstm['yhat'])
-# lstm_abs.append(abs_lstm)
-
-# df_abs = pd.concat(lr_abs + arima_abs + sarima_abs + lstm_abs)
 df_abs = pd.concat(arima_abs + sarima_abs)
 df_abs = pd.DataFrame(df_abs)
 df_abs.columns = ["abs"]
@@ -535,7 +518,6 @@ real_september = real.loc[start_date:end_date]
 test_sw2y_arima_september = test_sw2y_arima.loc[start_date:end_date]
 test_ew_sarima_september = test_ew_sarima.loc[start_date:end_date]
 
-# Plotar os dados reais e previstos para setembro
 plt.style.use("seaborn-v0_8-colorblind")
 plt.figure(figsize=(12, 6))
 plt.plot(real_september.water_produced, label="True", color="#377eb8")
@@ -545,13 +527,11 @@ plt.xlabel("Timestamp")
 plt.ylabel("Water demand (m³)")
 plt.legend()
 
-# Formatar os rótulos dos eixos x
 date_format = mdates.DateFormatter("%m-%d")
 plt.gca().xaxis.set_major_formatter(date_format)
 
 plt.tight_layout()
 
-# Salvar o gráfico em PDF
 output_file = os.path.join(output_dir, "comparacao_reais_previstos_setembro.pdf")
 plt.savefig(output_file)
 plt.close()

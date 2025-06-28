@@ -121,13 +121,13 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 
-# Obter a data e hora atuais
+# Data e hora atuais
 current_time = datetime.datetime.now()
 
-# Formatar a data e hora no formato desejado
+# Formatação data e hora
 timestamp = current_time.strftime("%Y-%m-%d-%H-%M-%S")
 
-# Criação de um diretório para as métricas, se não exisistir
+# diretórios
 output_dir = "output"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
@@ -277,7 +277,6 @@ ytrue_val = np.array(ytrue_val_EW)
 yhat_val = np.array(yhat_val_EW)
 
 for i in range(len(resultsEW_val["ytrue"]) - 1):
-    # Define o número de dias para esta iteração
     if i == 51:
         num_days = 8
     else:
@@ -297,7 +296,7 @@ for i in range(len(resultsEW_val["ytrue"]) - 1):
     mape = mean_absolute_percentage_error(ytrue_last, yhat_last)
     r2 = r2_score(ytrue_last, yhat_last)
 
-    # Adiciona as métricas ao dicionário de pontuação
+    # Métricas
     scoringEW_val["rmse"].append(rmse)
     scoringEW_val["mae"].append(mae)
     scoringEW_val["mape"].append(mape)
@@ -318,12 +317,11 @@ if rmse_mean < best_rmse_EW_val:
 with open(metrics_file, "a") as f:
     f.write(f"CHRONOS-EW,{rmse_mean},{mae_mean},{mape_mean},{r2_mean},test\n")
 
-# Iterar sobre os resultados das janelas de teste
+# Escrever os valores reais e previstos em arquivo CSV
 for i in range(len(resultsEW_val["ytrue"])):
     ytrue = resultsEW_val["ytrue"][i]
     yhat = resultsEW_val["yhat"][i]
 
-    # Escreve os valores reais e previstos em uma linha do arquivo CSV
     with open(values_file, "a") as f:
         for true, pred in zip(ytrue, yhat):
             f.write(f"CHRONOS-EW,{true},{pred}\n")
@@ -403,7 +401,6 @@ ytrue_sw2y_val = np.array(ytrue_val_sw2y)
 yhat_sw2y_val = np.array(yhat_val_sw2y)
 
 for i in range(len(results_sw2y_val["ytrue"]) - 1):
-    # Define o número de dias para esta iteração
     if i == 51:
         num_days = 8
     else:
@@ -417,13 +414,12 @@ for i in range(len(results_sw2y_val["ytrue"]) - 1):
     ytrue_last = ytrue_sw2y_val[start_idx:end_idx]
     yhat_last = yhat_sw2y_val[start_idx:end_idx]
 
-    # Calcula as métricas para os últimos dias
+    # Métricas
     rmse = mean_squared_error(ytrue_last, yhat_last, squared=False)
     mae = mean_absolute_error(ytrue_last, yhat_last)
     mape = mean_absolute_percentage_error(ytrue_last, yhat_last)
     r2 = r2_score(ytrue_last, yhat_last)
 
-    # Adiciona as métricas ao dicionário de pontuação
     scoring_sw2y_val["rmse"].append(rmse)
     scoring_sw2y_val["mae"].append(mae)
     scoring_sw2y_val["mape"].append(mape)
@@ -444,12 +440,11 @@ if rmse_mean < best_rmse_sw2y_val:
 with open(metrics_file, "a") as f:
     f.write(f"CHRONOS-SW2Y,{rmse_mean},{mae_mean},{mape_mean},{r2_mean},test\n")
 
-# Iterar sobre os resultados das janelas de teste
+# Escrever os valores reais e previstos em arquivo CSV
 for i in range(len(results_sw2y_val["ytrue"])):
     ytrue = results_sw2y_val["ytrue"][i]
     yhat = results_sw2y_val["yhat"][i]
 
-    # Escreve os valores reais e previstos em uma linha do arquivo CSV
     with open(values_file, "a") as f:
         for true, pred in zip(ytrue, yhat):
             f.write(f"CHRONOS-SW2Y,{true},{pred}\n")
@@ -499,13 +494,6 @@ for i, (trainidxs, testidxs) in enumerate(SW1Y_test.split(df)):
 
     low, median, high = np.quantile(predictions[0].numpy(), [0.1, 0.5, 0.9], axis=0)
 
-    # print(median)
-    # print(len(median))
-    # print(median.shape)
-    # print(predictions)
-    # print("len(y)", len(y))
-    # print("len(y_t)", len(y_t))
-
     others = scaler.inverse_transform(predictions.reshape(-1, 1))
     yhat = scaler.inverse_transform(median.reshape(-1, 1))
     ytrue = scaler.inverse_transform(y_t)
@@ -531,7 +519,6 @@ ytrue_test = np.array(ytrue_test_values)
 yhat_test = np.array(yhat_test_values)
 
 for i in range(len(resultsSW1Y_test["ytrue"]) - 1):
-    # Define o número de dias para esta iteração
     if i == 51:
         num_days = 8
     else:
@@ -545,13 +532,12 @@ for i in range(len(resultsSW1Y_test["ytrue"]) - 1):
     ytrue_last = ytrue_test[start_idx:end_idx]
     yhat_last = yhat_test[start_idx:end_idx]
 
-    # Calcula as métricas para os últimos dias
+    # Métricas
     rmse = mean_squared_error(ytrue_last, yhat_last, squared=False)
     mae = mean_absolute_error(ytrue_last, yhat_last)
     mape = mean_absolute_percentage_error(ytrue_last, yhat_last)
     r2 = r2_score(ytrue_last, yhat_last)
 
-    # Adiciona as métricas ao dicionário de pontuação
     scoringSW1Y["rmse"].append(rmse)
     scoringSW1Y["mae"].append(mae)
     scoringSW1Y["mape"].append(mape)
@@ -566,12 +552,11 @@ r2_mean = round(np.mean(scoringSW1Y["r2"]), 2)
 with open(metrics_file, "a") as f:
     f.write(f"CHRONOS-SW1Y,{rmse_mean},{mae_mean},{mape_mean},{r2_mean},test\n")
 
-# Iterar sobre os resultados das janelas de teste
+# Escrever os valores reais e previstos em arquivo CSV
 for i in range(len(resultsSW1Y_test["ytrue"])):
     ytrue = resultsSW1Y_test["ytrue"][i]
     yhat = resultsSW1Y_test["yhat"][i]
 
-    # Escreve os valores reais e previstos em uma linha do arquivo CSV
     with open(values_file, "a") as f:
         for true, pred in zip(ytrue, yhat):
             f.write(f"CHRONOS-SW1Y,{true},{pred}\n")

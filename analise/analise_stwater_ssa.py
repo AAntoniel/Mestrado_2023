@@ -10,16 +10,11 @@ import os
 from plot import setup, wrapup, save
 
 matplotlib.use("TkAgg")
-# Obter a data e hora atuais
+# Data e hora atuais
 current_time = datetime.datetime.now()
 
-# Formatar a data e hora no formato desejado
+# Formatação data e hora
 timestamp = current_time.strftime("%Y-%m-%d-%H-%M-%S")
-
-# Utilizar o estilo definido em plot.py
-# plt.rcParams.update(plt.rcParamsDefault)
-# plt.style.use("seaborn-whitegrid")
-# palette = plt.get_cmap("tab10")
 
 
 class SSA(object):
@@ -179,10 +174,11 @@ class SSA(object):
             self.calc_wcorr()
 
         ax = plt.imshow(self.Wcorr)
-        plt.xlabel(r"$\tilde{F}_i$")
-        plt.ylabel(r"$\tilde{F}_j$")
-        plt.colorbar(ax.colorbar, fraction=0.045)
-        ax.colorbar.set_label("$W_{i,j}$")
+        plt.xlabel(r"$\tilde{F}_i$", fontsize=12)
+        plt.ylabel(r"$\tilde{F}_j$", fontsize=12)
+        cbar = plt.colorbar(ax.colorbar, fraction=0.045)
+        cbar.set_label("$W_{i,j}$", fontsize=12)
+        cbar.ax.tick_params(labelsize=10)
         plt.clim(0, 1)
 
         # For plotting purposes:
@@ -193,15 +189,16 @@ class SSA(object):
 
         plt.xlim(min - 0.5, max_rnge + 0.5)
         plt.ylim(max_rnge + 0.5, min - 0.5)
+        plt.xticks(fontsize=10)
+        plt.yticks(fontsize=10)
         # plt.show()
 
 
-# Criação de um diretório para as decomposições, se não exisistir
+# Diretórios
 output_dir1 = "output/analise_ssa/analise_ssa2y"
 if not os.path.exists(output_dir1):
     os.makedirs(output_dir1)
 
-# Criação de um diretório para as decomposições, se não exisistir
 output_dir2 = "output/analise_ssa/analise_ssa3y"
 if not os.path.exists(output_dir2):
     os.makedirs(output_dir2)
@@ -216,81 +213,125 @@ df = pd.DataFrame(df)
 # ANÁLISE COM DADOS DE TREINAMENTO (2016 E 2017)
 # -------------------------------------------------------------------------------
 
+font_size_title = 20
+font_size_labels = 16
+font_size_ticks = 14
+
 # w-corr matrix
-# df_ssa_l2 = SSA(df["water_produced"][:730], 274)
-# df_ssa_l2.plot_wcorr(max=60)
-# plt.grid(False)
-# plt.title(r"W-Correlation para dados de treinamento")
-# plt.tight_layout()
-# output_path = os.path.join(output_dir1, "wcorrelation_2y.pdf")
-# plt.savefig(output_path, format="pdf")
-# plt.clf()
+df_ssa_l2 = SSA(df["water_produced"][:730], 274)
+df_ssa_l2.plot_wcorr(max=60)
+plt.grid(False)
+plt.title(r"W-Correlation para dados de treinamento", fontsize=16)
+plt.tight_layout()
+output_path = os.path.join(output_dir1, "wcorrelation_2y.pdf")
+plt.savefig(output_path, format="pdf")
+plt.clf()
 
-# # reconstrução dos componentes relevantes
-# componentes_2y = [
-#     df_ssa_l2.reconstruct(0),
-#     df_ssa_l2.reconstruct([1, 2]),
-#     df_ssa_l2.reconstruct([3, 4]),
-#     df_ssa_l2.reconstruct(slice(5, 10)),
-#     df_ssa_l2.reconstruct([10, 11, 12]),
-#     df_ssa_l2.reconstruct(slice(13, 18)),
-#     df_ssa_l2.reconstruct([18, 19]),
-# ]
+# reconstrução dos componentes relevantes
+componentes_2y = [
+    df_ssa_l2.reconstruct(0),
+    df_ssa_l2.reconstruct([1, 2]),
+    df_ssa_l2.reconstruct([3, 4]),
+    df_ssa_l2.reconstruct(slice(5, 10)),
+    df_ssa_l2.reconstruct([10, 11, 12]),
+    df_ssa_l2.reconstruct(slice(13, 18)),
+    df_ssa_l2.reconstruct([18, 19]),
+]
 
-# # plot de todos os componentes agrupados
-# plt.figure(figsize=(11.69, 8.27))
-# colors = ["b", "orange", "green", "red", "purple", "brown", "#ABABAB"]
-# df_ssa_l2.orig_TS.plot(alpha=0.4, color="green")
-# for i, componente in enumerate(componentes_2y):
-#     componente.plot(color=colors[i])
-# plt.xlabel("$t$")
-# plt.ylabel(r"$\tilde{F}_i(t)$")
-# plt.title("Componentes Agrupados, $L=274$")
-# legend =  ["Série Original"] + [r"$\tilde{{F}}^{{({0})}}$".format(i) for i in range(7)]
-# plt.legend(legend)
-# plt.tight_layout()
-# output_path = os.path.join(output_dir1, "componentes_agrupados_2y.pdf")
-# plt.savefig(output_path, format="pdf")
-# plt.clf()
+# plot de todos os componentes agrupados
+plt.figure(figsize=(11.69, 8.27))
+colors = ["b", "orange", "green", "red", "purple", "brown", "#ABABAB"]
+df_ssa_l2.orig_TS.plot(alpha=0.4, color="green")
+for i, componente in enumerate(componentes_2y):
+    componente.plot(color=colors[i])
+# plt.xlabel("$t$", fontsize=font_size_labels)
+plt.ylabel(r"$\tilde{F}_i(t)$", fontsize=font_size_labels)
+plt.xticks(fontsize=font_size_ticks)
+plt.yticks(fontsize=font_size_ticks)
+plt.title("Componentes Agrupados, $L=274$", fontsize=font_size_title)
+legend = ["Série Original"] + [r"$\tilde{{F}}^{{({0})}}$".format(i) for i in range(7)]
+plt.legend(legend, fontsize=font_size_ticks)
+plt.tight_layout()
+output_path = os.path.join(output_dir1, "componentes_agrupados_2y.pdf")
+plt.savefig(output_path, format="pdf")
+plt.clf()
 
-# # plot de todos os componentes separadamente
-# fig, axes = plt.subplots(4, 2, figsize=(8.27, 11.69), sharex=True)
-# axes = axes.flatten()
-# start_2017 = "2017-01-01"
-# end_2017 = "2017-12-31"
-# ylim = (-5000, 25000)
+# plot de todos os componentes separadamente
+fig, axes = plt.subplots(4, 2, figsize=(11.69, 8.27), sharex=True)
+axes = axes.flatten()
+start_2017 = "2017-01-01"
+end_2017 = "2017-12-31"
+ylim = (-5000, 25000)
 
 # df_ssa_l2.orig_TS[start_2017:end_2017].plot(
-#     ax=axes[0], title="Série Original", alpha=0.4, color="green", ylim=ylim
-# )
-# for i, componente in enumerate(componentes_2y):
-#     componente[start_2017:end_2017].plot(
-#         ax=axes[i + 1],
-#         title=r"Componente $\tilde{F}^{(%d)}$" % i,
-#         color=colors[i],
-#         ylim=ylim,
-#     )
+df_ssa_l2.orig_TS.plot(
+    ax=axes[0],
+    title="Série Original",
+    alpha=0.4,
+    color="green",
+    ylim=ylim,
+    fontsize=10,
+)
+axes[0].set_title("Série Original", fontsize=12)
 
-# plt.tight_layout()
-# output_path = os.path.join(output_dir1, "componentes_separados_2y.pdf")
-# plt.savefig(output_path, format="pdf")
-# plt.clf()
-# # plt.show()
+for i, componente in enumerate(componentes_2y):
+    # componente[start_2017:end_2017].plot(
+    componente.plot(
+        ax=axes[i + 1],
+        title=r"Componente $\tilde{F}^{(%d)}$" % i,
+        color=colors[i],
+        ylim=ylim,
+        fontsize=10,
+    )
+    axes[i + 1].set_title(r"Componente $\tilde{F}^{(%d)}$" % i, fontsize=12)
 
-# # plot dos componentes relevantes agrupados x o restante dos componentes
-# plt.figure(figsize=(11.69, 8.27))
-# df_ssa_l2.orig_TS.plot(alpha=0.4, color="green")
-# df_ssa_l2.reconstruct(slice(0, 20)).plot(color=colors[0])
-# df_ssa_l2.reconstruct(slice(20, 730)).plot(color=colors[1])
-# plt.legend(
-#     ["Série original", "Primeiros 20 componentes juntos", "730 Componentes restantes"]
-# )
-# plt.tight_layout()
-# output_path = os.path.join(output_dir1, "combinacao_componentes_2y.pdf")
-# plt.savefig(output_path, format="pdf")
-# plt.clf()
+plt.tight_layout()
+output_path = os.path.join(output_dir1, "componentes_separados_2y.pdf")
+plt.savefig(output_path, format="pdf")
+plt.clf()
 # plt.show()
 
+# plot dos componentes relevantes agrupados x o restante dos componentes
+plt.figure(figsize=(11.69, 8.27))
+df_ssa_l2.orig_TS.plot(alpha=0.4, color="green")
+df_ssa_l2.reconstruct(slice(0, 20)).plot(color=colors[0])
+df_ssa_l2.reconstruct(slice(20, 730)).plot(color=colors[1])
+plt.title("Série temporal suavizada e resíduos retirados", fontsize=font_size_title)
+plt.legend(
+    ["Série original", "Primeiros 20 componentes juntos", "730 Componentes restantes"],
+    fontsize=font_size_ticks,
+)
+plt.xticks(fontsize=font_size_ticks)
+plt.yticks(fontsize=font_size_ticks)
+plt.tight_layout()
+output_path = os.path.join(output_dir1, "combinacao_componentes_2y.pdf")
+plt.savefig(output_path, format="pdf")
+plt.clf()
+plt.show()
+
+# Nova figura apenas para F4 e F6
+start_jan_feb = "2017-01-01"
+end_jan_feb = "2017-02-28"
+
+fig, axes = plt.subplots(2, 1, figsize=(11.69, 8.27), sharex=True)
+
+componentes_2y[4][start_jan_feb:end_jan_feb].plot(
+    ax=axes[0], color="purple", label=r"$\tilde{F}^{(4)}$", fontsize=14
+)
+axes[0].set_title(r"Componente $\tilde{F}^{(4)}$ (Jan-Fev 2017)", fontsize=16)
+
+componentes_2y[6][start_jan_feb:end_jan_feb].plot(
+    ax=axes[1], color="grey", label=r"$\tilde{F}^{(6)}$", fontsize=14
+)
+axes[1].set_title(r"Componente $\tilde{F}^{(6)}$ (Jan-Fev 2017)", fontsize=16)
+
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+plt.tight_layout()
+
+output_path = os.path.join(output_dir1, "componentes_F4_F6_2017.pdf")
+plt.savefig(output_path, format="pdf")
+plt.clf()
 # -------------------------------------------------------------------------------
 # ANÁLISE COM DADOS DE TREINAMENTO E VALIDAÇÃO (2016, 2017 E 2018)
 # -------------------------------------------------------------------------------
@@ -299,7 +340,7 @@ df = pd.DataFrame(df)
 df_ssa_l3 = SSA(df["water_produced"][:1095], 410)
 df_ssa_l3.plot_wcorr(max=60)
 plt.grid(False)
-plt.title(r"W-Correlation incluindo dados de validação")
+plt.title(r"W-Correlation incluindo dados de validação", fontsize=16)
 plt.tight_layout()
 output_path = os.path.join(output_dir2, "wcorrelation_3y.pdf")
 plt.savefig(output_path, format="pdf")
@@ -325,10 +366,12 @@ df_ssa_l3.orig_TS.plot(alpha=0.4, color="green")
 for i, componente in enumerate(componentes_3y):
     componente.plot(color=colors[i])
 plt.xlabel("$t$")
-plt.ylabel(r"$\tilde{F}_i(t)$")
-plt.title("Componentes Agrupados, $L=274$")
+plt.ylabel(r"$\tilde{F}_i(t)$", fontsize=font_size_labels)
+plt.xticks(fontsize=font_size_ticks)
+plt.yticks(fontsize=font_size_ticks)
+plt.title("Componentes Agrupados, $L=274$", fontsize=font_size_title)
 legend = ["Série Original"] + [r"$\tilde{{F}}^{{({0})}}$".format(i) for i in range(8)]
-plt.legend(legend)
+plt.legend(legend, fontsize=font_size_ticks, loc="upper right")
 plt.tight_layout()
 output_path = os.path.join(output_dir2, "componentes_agrupados_3y.pdf")
 plt.savefig(output_path, format="pdf")
@@ -336,23 +379,33 @@ plt.clf()
 # plt.show()
 
 # plot de todos os componentes separadamente
-fig, axes = plt.subplots(4, 2, figsize=(8.27, 11.69), sharex=True)
+fig, axes = plt.subplots(4, 2, figsize=(11.69, 8.27), sharex=True)
 axes = axes.flatten()
 start_2018 = "2018-01-01"
 end_2018 = "2018-12-31"
 ylim = (-5000, 25000)
 
-df_ssa_l3.orig_TS[start_2018:end_2018].plot(
-    ax=axes[0], title="Série Original", alpha=0.4, color="green", ylim=ylim
+# df_ssa_l3.orig_TS[start_2018:end_2018].plot(
+df_ssa_l3.orig_TS.plot(
+    ax=axes[0],
+    alpha=0.4,
+    color="green",
+    ylim=ylim,
+    fontsize=10,
 )
-componentes_3y[0][start_2018:end_2018].plot(ax=axes[0], color=colors[0], ylim=ylim)
+axes[0].set_title("Série Original e tendência", fontsize=12)
+# componentes_3y[0][start_2018:end_2018].plot(ax=axes[0], color=colors[0], ylim=ylim)
+componentes_3y[0].plot(ax=axes[0], color=colors[0], ylim=ylim)
 for i, componente in enumerate(componentes_3y[1:], start=1):
-    componente[start_2018:end_2018].plot(
+    # componente[start_2018:end_2018].plot(
+    componente.plot(
         ax=axes[i],
         title=r"Componente $\tilde{F}^{(%d)}$" % (i),
         color=colors[i],
         ylim=ylim,
+        fontsize=10,
     )
+    axes[i].set_title(r"Componente $\tilde{F}^{(%d)}$" % i, fontsize=12)
 
 plt.tight_layout()
 output_path = os.path.join(output_dir2, "componentes_separados_3y.pdf")
@@ -365,10 +418,38 @@ plt.figure(figsize=(11.69, 8.27))
 df_ssa_l3.orig_TS.plot(alpha=0.4, color="green")
 df_ssa_l3.reconstruct(slice(0, 21)).plot(color=colors[0])
 df_ssa_l3.reconstruct(slice(21, 1095)).plot(color=colors[1])
+plt.title("Série temporal suavizada e resíduos retirados", fontsize=font_size_title)
 plt.legend(
-    ["Série original", "Primeiros 21 componentes juntos", "1074 Componentes restantes"]
+    ["Série original", "Primeiros 21 componentes juntos", "1074 Componentes restantes"],
+    fontsize=font_size_ticks,
 )
+plt.xticks(fontsize=font_size_ticks)
+plt.yticks(fontsize=font_size_ticks)
 plt.tight_layout()
 output_path = os.path.join(output_dir2, "combinacao_componentes_3y.pdf")
+plt.savefig(output_path, format="pdf")
+plt.clf()
+
+# Nova figura apenas para F6 e F7
+start_jan_feb2 = "2018-01-01"
+end_jan_feb2 = "2018-02-28"
+
+fig, axes = plt.subplots(2, 1, figsize=(11.69, 8.27), sharex=True)
+
+componentes_3y[6][start_jan_feb:end_jan_feb].plot(
+    ax=axes[0], color="grey", label=r"$\tilde{F}^{(4)}$", fontsize=14
+)
+axes[0].set_title(r"Componente $\tilde{F}^{(4)}$ (Jan-Fev 2018)", fontsize=16)
+
+componentes_3y[7][start_jan_feb:end_jan_feb].plot(
+    ax=axes[1], color="#ff52bf", label=r"$\tilde{F}^{(6)}$", fontsize=14, linewidth=2
+)
+axes[1].set_title(r"Componente $\tilde{F}^{(6)}$ (Jan-Fev 2018)", fontsize=16)
+
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+plt.tight_layout()
+
+output_path = os.path.join(output_dir2, "componentes_F4_F6_2018.pdf")
 plt.savefig(output_path, format="pdf")
 plt.clf()

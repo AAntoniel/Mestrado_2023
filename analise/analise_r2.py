@@ -20,6 +20,8 @@ from matplotlib import rcParams
 from matplotlib.backends.backend_pdf import PdfPages
 from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
 from mpl_toolkits.axes_grid1.inset_locator import mark_inset
+import matplotlib.gridspec as gridspec
+from matplotlib.ticker import MultipleLocator
 
 # TODO: sex matplotlib text to black!
 # TODO: latex and seaborn (googlit)
@@ -331,46 +333,43 @@ class plot:
         wrapup(pdf, False)
 
 
-"""#Divisão dos dados de reais e teste para cada modelo"""
+"""#Divisão dos dados reais e teste para cada modelo"""
 
-# df_metrics_lr = pd.read_csv('/content/drive/MyDrive/Dataset/Resultados/output/metrics-LR_2024-04-23-17-15-26.csv')
-# df_metrics_arima = pd.read_csv('/content/drive/MyDrive/PPGESE/ARTIGO/Results/metrics-arima_2024-05-20-15-38-45.csv')
-# df_metrics_sarima = pd.read_csv('/content/drive/MyDrive/PPGESE/ARTIGO/Results/metrics-sarima_2024-05-22-09-36-40.csv')
-# df_metrics_sarima2 = pd.read_csv('/content/drive/MyDrive/PPGESE/ARTIGO/Results/metrics-sarima_2024-05-25-01-55-14.csv')
-# df_metrics_lstm = pd.read_csv('/content/drive/MyDrive/Dataset/Resultados/output/metrics-LSTM_2024-04-23-17-22-19.csv')
+df_metrics_arima = pd.read_csv("output/metrics-arima_2024-05-20-15-38-45.csv")
 
-# df_values_lr = pd.read_csv('/content/drive/MyDrive/Dataset/Resultados/output_ytrue_yhat/results_LR-2024-04-23-17-15-26.csv')
+df_metrics_sarima1 = pd.read_csv("output/metrics-sarima_2024-05-22-09-36-40.csv")
+df_metrics_sarima2 = pd.read_csv("output/metrics-sarima_2024-05-25-01-55-14.csv")
+
+df_metrics_lstm1 = pd.read_csv("output/metrics-LSTM_2024-06-27-10-33-50.csv")  # EW
+df_metrics_lstm2 = pd.read_csv("output/metrics-LSTM_2024-06-28-23-29-24.csv")  # SW2Y
+df_metrics_lstm3 = pd.read_csv("output/metrics-LSTM_2025-02-20-09-52-26.csv")  # SW1Y
+
+df_metrics_np1 = pd.read_csv("output/metrics-NP_2024-12-12-20-29-38.csv")  # EW
+df_metrics_np2 = pd.read_csv("output/metrics-NP_2024-12-16-20-57-34.csv")  # SW2Y
+df_metrics_np3 = pd.read_csv("output/metrics-NP_2024-12-26-14-24-33.csv")  # SW1Y
+
+df_metrics_cr = pd.read_csv("output/metrics-chronos_2024-10-24-13-12-42.csv")  # EW
+
 df_values_arima = pd.read_csv("output_ytrue_yhat/results_arima-2024-05-20-15-38-45.csv")
-df_values_sarima = pd.read_csv(
+
+df_values_sarima1 = pd.read_csv(
     "output_ytrue_yhat/results_sarima-2024-05-22-09-36-40.csv"
 )
 df_values_sarima2 = pd.read_csv(
     "output_ytrue_yhat/results_sarima-2024-05-25-01-55-14.csv"
 )
-df_values_lstm = pd.read_csv("output_ytrue_yhat/results_lstm-2024-06-27-10-33-50.csv")
+
+df_values_lstm1 = pd.read_csv("output_ytrue_yhat/results_lstm-2024-06-27-10-33-50.csv")
 df_values_lstm2 = pd.read_csv("output_ytrue_yhat/results_lstm-2024-06-28-23-29-24.csv")
-df_values_lstm3 = pd.read_csv("output_ytrue_yhat/results_lstm-2024-06-30-23-01-04.csv")
+df_values_lstm3 = pd.read_csv("output_ytrue_yhat/results_lstm-2025-02-20-09-52-26.csv")
+
+df_values_np1 = pd.read_csv("output_ytrue_yhat/results_NP-2024-12-12-20-29-38.csv")
+df_values_np2 = pd.read_csv("output_ytrue_yhat/results_NP-2024-12-16-20-57-34.csv")
+df_values_np3 = pd.read_csv("output_ytrue_yhat/results_NP-2024-12-26-14-24-33.csv")
+
+df_values_cr = pd.read_csv("output_ytrue_yhat/results_chronos-2024-10-24-13-12-42.csv")
 
 dates = pd.date_range(start="2019-01-01", end="2019-12-31")
-
-# Divisão dos dados de teste para cada backtest de LR
-# Expanding Window
-# test_ew_lr = df_values_lr[:365]
-# test_ew_lr.index = dates
-# test_ew_lr.ytrue = test_ew_lr.ytrue.apply(lambda x: float(x.strip('[]')))
-# test_ew_lr.yhat = test_ew_lr.yhat.apply(lambda x: float(x.strip('[]')))
-
-# # Sliding Window 2Y
-# test_sw2y_lr = df_values_lr[365:730]
-# test_sw2y_lr.index = dates
-# test_sw2y_lr.ytrue = test_sw2y_lr.ytrue.apply(lambda x: float(x.strip('[]')))
-# test_sw2y_lr.yhat = test_sw2y_lr.yhat.apply(lambda x: float(x.strip('[]')))
-
-# # Sliding Window 1Y
-# test_sw1y_lr = df_values_lr[730:]
-# test_sw1y_lr.index = dates
-# test_sw1y_lr.ytrue = test_sw1y_lr.ytrue.apply(lambda x: float(x.strip('[]')))
-# test_sw1y_lr.yhat = test_sw1y_lr.yhat.apply(lambda x: float(x.strip('[]')))
 
 # ---------------------//----------------------------------//---------------------------------------
 
@@ -397,20 +396,19 @@ test_sw1y_arima.yhat = test_sw1y_arima.yhat.apply(lambda x: float(x.strip("[]"))
 
 # Divisão dos dados de teste para cada backtest de SARIMA
 # Expanding Window
-test_ew_sarima = df_values_sarima[:365]
+test_ew_sarima = df_values_sarima1[:365]
 test_ew_sarima.index = dates
 test_ew_sarima.ytrue = test_ew_sarima.ytrue.apply(lambda x: float(x.strip("[]")))
 test_ew_sarima.yhat = test_ew_sarima.yhat.apply(lambda x: float(x.strip("[]")))
 
 # Sliding Window 2Y
-test_sw2y_sarima = df_values_sarima[365:730]
+test_sw2y_sarima = df_values_sarima1[365:730]
 test_sw2y_sarima.index = dates
 test_sw2y_sarima.ytrue = test_sw2y_sarima.ytrue.apply(lambda x: float(x.strip("[]")))
 test_sw2y_sarima.yhat = test_sw2y_sarima.yhat.apply(lambda x: float(x.strip("[]")))
 
 # Sliding Window 1Y
-# test_sw1y_sarima = df_values_sarima[730:]
-test_sw1y_sarima = df_values_sarima2[:365]
+test_sw1y_sarima = df_values_sarima2
 test_sw1y_sarima.index = dates
 test_sw1y_sarima.ytrue = test_sw1y_sarima.ytrue.apply(lambda x: float(x.strip("[]")))
 test_sw1y_sarima.yhat = test_sw1y_sarima.yhat.apply(lambda x: float(x.strip("[]")))
@@ -419,7 +417,7 @@ test_sw1y_sarima.yhat = test_sw1y_sarima.yhat.apply(lambda x: float(x.strip("[]"
 
 # Divisão dos dados de teste para cada backtest de LSTM
 # Expanding Window
-test_ew_lstm = df_values_lstm[:365]
+test_ew_lstm = df_values_lstm1
 test_ew_lstm.index = dates
 test_ew_lstm.ytrue = test_ew_lstm.ytrue.apply(lambda x: float(x.strip("[]")))
 test_ew_lstm.yhat = test_ew_lstm.yhat.apply(lambda x: float(x.strip("[]")))
@@ -436,13 +434,52 @@ test_sw1y_lstm.index = dates
 test_sw1y_lstm.ytrue = test_sw1y_lstm.ytrue.apply(lambda x: float(x.strip("[]")))
 test_sw1y_lstm.yhat = test_sw1y_lstm.yhat.apply(lambda x: float(x.strip("[]")))
 
+# ---------------------//----------------------------------//---------------------------------------
+
+# Divisão dos dados de teste para cada backtest de NeuralProphet
+# Expanding Window
+test_ew_np = df_values_np1
+test_ew_np.index = dates
+test_ew_np.ytrue = test_ew_np.ytrue.apply(lambda x: float(x.strip("[]")))
+test_ew_np.yhat = test_ew_np.yhat.apply(lambda x: float(x.strip("[]")))
+
+# Sliding Window 2Y
+test_sw2y_np = df_values_np2
+test_sw2y_np.index = dates
+test_sw2y_np.ytrue = test_sw2y_np.ytrue.apply(lambda x: float(x.strip("[]")))
+test_sw2y_np.yhat = test_sw2y_np.yhat.apply(lambda x: float(x.strip("[]")))
+
+# Sliding Window 1Y
+test_sw1y_np = df_values_np3
+test_sw1y_np.index = dates
+test_sw1y_np.ytrue = test_sw1y_np.ytrue.apply(lambda x: float(x.strip("[]")))
+test_sw1y_np.yhat = test_sw1y_np.yhat.apply(lambda x: float(x.strip("[]")))
+
+# ---------------------//----------------------------------//---------------------------------------
+
+# Divisão dos dados de teste para cada backtest de CHRONOS
+# Expanding Window
+test_ew_cr = df_values_cr[:365]
+test_ew_cr.index = dates
+test_ew_cr.ytrue = test_ew_cr.ytrue.apply(lambda x: float(x.strip("[]")))
+test_ew_cr.yhat = test_ew_cr.yhat.apply(lambda x: float(x.strip("[]")))
+
+# Sliding Window 2Y
+test_sw2y_cr = df_values_cr[365:730]
+test_sw2y_cr.index = dates
+test_sw2y_cr.ytrue = test_sw2y_cr.ytrue.apply(lambda x: float(x.strip("[]")))
+test_sw2y_cr.yhat = test_sw2y_cr.yhat.apply(lambda x: float(x.strip("[]")))
+
+# Sliding Window 1Y
+test_sw1y_cr = df_values_cr[730:]
+test_sw1y_cr.index = dates
+test_sw1y_cr.ytrue = test_sw1y_cr.ytrue.apply(lambda x: float(x.strip("[]")))
+test_sw1y_cr.yhat = test_sw1y_cr.yhat.apply(lambda x: float(x.strip("[]")))
+
 """#Separação dos dados por mês"""
 
 # Separar os dados de ytrue e yhat por mês
-# Atualmente não utilizado
 # ------------------------------------------------------------------------------
-# test_ew_lr['month'] = test_ew_lr.index.month
-# pivot_test_ew_lr = test_ew_lr.pivot_table(index=test_ew_lr.index.day, columns=test_ew_lr.index.month, values=['ytrue', 'yhat'])
 
 test_sw2y_arima["month"] = test_sw2y_arima.index.month
 pivot_test_sw2y_arima = test_sw2y_arima.pivot_table(
@@ -458,12 +495,7 @@ pivot_test_ew_sarima = test_ew_sarima.pivot_table(
     values=["ytrue", "yhat"],
 )
 
-# test_ew_lstm['month'] = test_ew_lstm.index.month
-# pivot_test_ew_lstm = test_ew_lstm.pivot_table(index=test_ew_lstm.index.day, columns=test_ew_lstm.index.month, values=['ytrue', 'yhat'])
-
-from matplotlib.ticker import MultipleLocator
-
-# Configuração para usar Times New Roman e aumentar o tamanho da fonte
+# Times New Roman e aumentar o tamanho da fonte
 plt.rcParams.update(
     {
         "text.usetex": False,
@@ -478,16 +510,17 @@ plt.rcParams.update(
 )
 
 # Lista de dataframes e nomes dos modelos
-dfs = [test_sw2y_arima, test_ew_sarima, test_sw2y_lstm]
-model_names = ["ARIMA-SW2Y", "SARIMA-EW", "LSTM-SW2Y"]
+dfs = [test_sw2y_arima, test_ew_sarima, test_sw2y_lstm, test_ew_np, test_sw2y_cr]
+model_names = ["ARIMA-SW2Y", "SARIMA-EW", "LSTM-SW2Y", "NP-EW", "CR-SW2Y"]
 
-# Tamanho da figura
-figsize = (8.27, 11.69)
-fig, axes = plt.subplots(3, 1, figsize=figsize)
+fig, axes = plt.subplots(3, 2, figsize=(8.27, 11.69))
+axes = axes.flatten()
 
-# Plotando cada modelo
-for i, (dfpred, model_name) in enumerate(zip(dfs, model_names)):
+for i in range(4):
     ax = axes[i]
+    dfpred = dfs[i]
+    model_name = model_names[i]
+
     sns.regplot(
         x="ytrue",
         y="yhat",
@@ -498,32 +531,53 @@ for i, (dfpred, model_name) in enumerate(zip(dfs, model_names)):
         scatter_kws={"alpha": 0.5},
     )
 
-    # corr = dfpred[['ytrue', 'yhat']].corr().iloc[1, 0]
-    # corr = round(corr, 2)
     r2 = round(r2_score(dfpred["ytrue"], dfpred["yhat"]), 3)
+    print(f"{i}: ", r2)
     ax.set_title(f"{model_name}: $R^2$={r2}")
 
-    # print(r2)
-    # sw2y = 0.7528520291894026
-    # ew = 0.7451190210492027
+axes[4].axis("off")
+axes[5].axis("off")
 
+# Ajuste manual do subplot centralizado
+left = 0.3  # Ajuste horizontal
+bottom = 0.05  # Ajuste vertical
+width = 0.41
+height = 0.25
 
-# Ajustar os subplots
-for i, ax in enumerate(axes):
-    ax.yaxis.set_major_locator(MultipleLocator(5000))
-    ax.xaxis.set_major_locator(MultipleLocator(5000))
-    ax.yaxis.set_major_formatter(plot.OOMFormatter(3, "%1.0f"))
-    ax.ticklabel_format(axis="y", style="sci", scilimits=(-3, 3))
-    ax.xaxis.set_major_formatter(plot.OOMFormatter(3, "%1.0f"))
-    ax.ticklabel_format(axis="x", style="sci", scilimits=(-3, 3))
-    ax.set(xlabel="Real")
-    ax.set(ylabel="Previsto")
+ax = fig.add_axes([left, bottom, width, height])  # Adiciona o eixo manualmente
 
-plt.tight_layout()
+# Plotar o último modelo
+dfpred = dfs[4]
+model_name = model_names[4]
+
+sns.regplot(
+    x="ytrue",
+    y="yhat",
+    data=dfpred,
+    ax=ax,
+    scatter=True,
+    label=model_name,
+    scatter_kws={"alpha": 0.5},
+)
+
+r2 = round(r2_score(dfpred["ytrue"], dfpred["yhat"]), 3)
+print(r2)
+ax.set_title(f"{model_name}: $R^2$={r2}")
+
+# Ajustar todos os eixos
+for ax in fig.axes:
+    if ax.has_data():  # Só aplica em eixos com gráfico
+        ax.yaxis.set_major_locator(MultipleLocator(5000))
+        ax.xaxis.set_major_locator(MultipleLocator(5000))
+        ax.yaxis.set_major_formatter(plot.OOMFormatter(3, "%1.0f"))
+        ax.ticklabel_format(axis="y", style="sci", scilimits=(-3, 3))
+        ax.xaxis.set_major_formatter(plot.OOMFormatter(3, "%1.0f"))
+        ax.ticklabel_format(axis="x", style="sci", scilimits=(-3, 3))
+        ax.set(xlabel="Real", ylabel="Previsto")
+
+plt.tight_layout(rect=[0, 0.1, 1, 1])
 
 output_dir = "comparativos"
 os.makedirs(output_dir, exist_ok=True)
 output_file = os.path.join(output_dir, "realxpred_r2.pdf")
 plt.savefig(output_file)
-
-# print(f"Gráfico salvo como {filename}")

@@ -19,8 +19,6 @@ import pickle
 import itertools
 import datetime
 
-# Teste de comentário
-
 
 class SlidingWindow:
     #   Vai instânciar a classe e vai necessitar da definição do tamanho das amostras
@@ -120,13 +118,13 @@ q_values = [3, 4, 28, 38]
 
 param_combinations = list(itertools.product(p_values, d_values, q_values))
 
-# Obter a data e hora atuais
+# Data e hora atuais
 current_time = datetime.datetime.now()
 
-# Formatar a data e hora no formato desejado
+# Formatação data e hora
 timestamp = current_time.strftime("%Y-%m-%d-%H-%M-%S")
 
-# Criação de um diretório para as métricas, se não exisistir
+# diretórios
 output_dir = "output"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
@@ -208,7 +206,6 @@ for p, d, q in param_combinations:
     yhat_val = np.array(yhat_val_EW)
 
     for i in range(len(resultsEW_val["ytrue"]) - 1):
-        # Define o número de dias para esta iteração
         if i == 51:
             num_days = 8
         else:
@@ -222,13 +219,12 @@ for p, d, q in param_combinations:
         ytrue_last = ytrue_val[start_idx:end_idx]
         yhat_last = yhat_val[start_idx:end_idx]
 
-        # Calcula as métricas para os últimos dias
+        # Métricas
         rmse = mean_squared_error(ytrue_last, yhat_last, squared=False)
         mae = mean_absolute_error(ytrue_last, yhat_last)
         mape = mean_absolute_percentage_error(ytrue_last, yhat_last)
         r2 = r2_score(ytrue_last, yhat_last)
 
-        # Adiciona as métricas ao dicionário de pontuação
         scoringEW_val["rmse"].append(rmse)
         scoringEW_val["mae"].append(mae)
         scoringEW_val["mape"].append(mape)
@@ -246,7 +242,6 @@ for p, d, q in param_combinations:
         best_r2_EW_val = r2_mean
         best_params_EW = arima_order
 
-# Write validation metrics to CSV file
 with open(metrics_file, "a") as f:
     f.write(
         f"ARIMA-EW,{best_params_EW},{best_rmse_EW_val},{best_mae_EW_val},{best_mape_EW_val},{best_r2_EW_val},val\n"
@@ -283,7 +278,7 @@ for i, (trainidxs, testidxs) in enumerate(expanding_window_test.split(df)):
     arima_model = sm.tsa.ARIMA(y, order=best_params_EW)
     arima_fit = arima_model.fit()
 
-    print("Parametros atuais para teste: ", best_params_EW)
+    # print("Parametros atuais para teste: ", best_params_EW)
 
     # Previsões para os dados de teste
     predictions = arima_fit.forecast(steps=len(y_t))
@@ -307,7 +302,6 @@ ytrue_test = np.array(ytrue_test_values)
 yhat_test = np.array(yhat_test_values)
 
 for i in range(len(resultsEW_test["ytrue"]) - 1):
-    # Define o número de dias para esta iteração
     if i == 51:
         num_days = 8
     else:
@@ -321,13 +315,12 @@ for i in range(len(resultsEW_test["ytrue"]) - 1):
     ytrue_last = ytrue_test[start_idx:end_idx]
     yhat_last = yhat_test[start_idx:end_idx]
 
-    # Calcula as métricas para os últimos dias
+    # Métricas
     rmse = mean_squared_error(ytrue_last, yhat_last, squared=False)
     mae = mean_absolute_error(ytrue_last, yhat_last)
     mape = mean_absolute_percentage_error(ytrue_last, yhat_last)
     r2 = r2_score(ytrue_last, yhat_last)
 
-    # Adiciona as métricas ao dicionário de pontuação
     scoringEW["rmse"].append(rmse)
     scoringEW["mae"].append(mae)
     scoringEW["mape"].append(mape)
@@ -343,12 +336,11 @@ with open(metrics_file, "a") as f:
         f"ARIMA-EW,{best_params_EW},{rmse_mean},{mae_mean},{mape_mean},{r2_mean},test\n"
     )
 
-# Iterar sobre os resultados das janelas de teste
+# Escrever os valores reais e previstos em arquivo CSV
 for i in range(len(resultsEW_test["ytrue"])):
     ytrue = resultsEW_test["ytrue"][i]
     yhat = resultsEW_test["yhat"][i]
 
-    # Escrever os valores reais e previstos em uma linha do arquivo CSV
     with open(values_file, "a") as f:
         for true, pred in zip(ytrue, yhat):
             f.write(f"ARIMA-EW,{true},{pred}\n")
@@ -419,7 +411,6 @@ for p, d, q in param_combinations:
     yhat_val = np.array(yhat_val_SW2Y)
 
     for i in range(len(resultsSW2Y_val["ytrue"]) - 1):
-        # Define o número de dias para esta iteração
         if i == 51:
             num_days = 8
         else:
@@ -433,13 +424,12 @@ for p, d, q in param_combinations:
         ytrue_last = ytrue_val[start_idx:end_idx]
         yhat_last = yhat_val[start_idx:end_idx]
 
-        # Calcula as métricas para os últimos dias
+        # Métricas
         rmse = mean_squared_error(ytrue_last, yhat_last, squared=False)
         mae = mean_absolute_error(ytrue_last, yhat_last)
         mape = mean_absolute_percentage_error(ytrue_last, yhat_last)
         r2 = r2_score(ytrue_last, yhat_last)
 
-        # Adiciona as métricas ao dicionário de pontuação
         scoringSW2Y_val["rmse"].append(rmse)
         scoringSW2Y_val["mae"].append(mae)
         scoringSW2Y_val["mape"].append(mape)
@@ -457,7 +447,6 @@ for p, d, q in param_combinations:
         best_r2_SW2Y_val = r2_mean
         best_params_SW2Y = arima_order
 
-# Write validation metrics to CSV file
 with open(metrics_file, "a") as f:
     f.write(
         f"ARIMA-SW2Y,{best_params_SW2Y},{best_rmse_SW2Y_val},{best_mae_SW2Y_val},{best_mape_SW2Y_val},{best_r2_SW2Y_val},val\n"
@@ -517,7 +506,6 @@ ytrue_test = np.array(ytrue_test_values)
 yhat_test = np.array(yhat_test_values)
 
 for i in range(len(resultsSW2Y_test["ytrue"]) - 1):
-    # Define o número de dias para esta iteração
     if i == 51:
         num_days = 8
     else:
@@ -531,13 +519,12 @@ for i in range(len(resultsSW2Y_test["ytrue"]) - 1):
     ytrue_last = ytrue_test[start_idx:end_idx]
     yhat_last = yhat_test[start_idx:end_idx]
 
-    # Calcula as métricas para os últimos dias
+    # Métricas
     rmse = mean_squared_error(ytrue_last, yhat_last, squared=False)
     mae = mean_absolute_error(ytrue_last, yhat_last)
     mape = mean_absolute_percentage_error(ytrue_last, yhat_last)
     r2 = r2_score(ytrue_last, yhat_last)
 
-    # Adiciona as métricas ao dicionário de pontuação
     scoringSW2Y["rmse"].append(rmse)
     scoringSW2Y["mae"].append(mae)
     scoringSW2Y["mape"].append(mape)
@@ -548,18 +535,16 @@ mae_mean = round(np.mean(scoringSW2Y["mae"]), 2)
 mape_mean = round((np.mean(scoringSW2Y["mape"]) * 100), 2)
 r2_mean = round(np.mean(scoringSW2Y["r2"]), 2)
 
-# Write test metrics to CSV file
 with open(metrics_file, "a") as f:
     f.write(
         f"ARIMA-SW2Y,{best_params_SW2Y},{rmse_mean},{mae_mean},{mape_mean},{r2_mean},test\n"
     )
 
-# Iterar sobre os resultados das janelas de teste
+# Escrever os valores reais e previstos em arquivo CSV
 for i in range(len(resultsSW2Y_test["ytrue"])):
     ytrue = resultsSW2Y_test["ytrue"][i]
     yhat = resultsSW2Y_test["yhat"][i]
 
-    # Escrever os valores reais e previstos em uma linha do arquivo CSV
     with open(values_file, "a") as f:
         for true, pred in zip(ytrue, yhat):
             f.write(f"ARIMA-SW2Y,{true},{pred}\n")
@@ -631,7 +616,6 @@ for p, d, q in param_combinations:
     yhat_val = np.array(yhat_val_SW1Y)
 
     for i in range(len(resultsSW1Y_val["ytrue"]) - 1):
-        # Define o número de dias para esta iteração
         if i == 51:
             num_days = 8
         else:
@@ -645,13 +629,12 @@ for p, d, q in param_combinations:
         ytrue_last = ytrue_val[start_idx:end_idx]
         yhat_last = yhat_val[start_idx:end_idx]
 
-        # Calcula as métricas para os últimos dias
+        # Métricas
         rmse = mean_squared_error(ytrue_last, yhat_last, squared=False)
         mae = mean_absolute_error(ytrue_last, yhat_last)
         mape = mean_absolute_percentage_error(ytrue_last, yhat_last)
         r2 = r2_score(ytrue_last, yhat_last)
 
-        # Adiciona as métricas ao dicionário de pontuação
         scoringSW1Y_val["rmse"].append(rmse)
         scoringSW1Y_val["mae"].append(mae)
         scoringSW1Y_val["mape"].append(mape)
@@ -669,7 +652,6 @@ for p, d, q in param_combinations:
         best_r2_SW1Y_val = r2_mean
         best_params_SW1Y = arima_order
 
-# Write validation metrics to CSV file
 with open(metrics_file, "a") as f:
     f.write(
         f"ARIMA-SW1Y,{best_params_SW1Y},{best_rmse_SW1Y_val},{best_mae_SW1Y_val},{best_mape_SW1Y_val},{best_r2_SW1Y_val},val\n"
@@ -705,7 +687,7 @@ for i, (trainidxs, testidxs) in enumerate(SW1Y_test.split(df)):
     arima_model = sm.tsa.ARIMA(y, order=best_params_SW1Y)
     arima_fit = arima_model.fit()
 
-    print("Parametros atuais para teste: ", best_params_SW1Y)
+    # print("Parametros atuais para teste: ", best_params_SW1Y)
 
     # Previsões para os dados de teste
     predictions = arima_fit.forecast(steps=len(y_t))
@@ -729,7 +711,6 @@ ytrue_test = np.array(ytrue_test_values)
 yhat_test = np.array(yhat_test_values)
 
 for i in range(len(resultsSW1Y_test["ytrue"]) - 1):
-    # Define o número de dias para esta iteração
     if i == 51:
         num_days = 8
     else:
@@ -743,13 +724,12 @@ for i in range(len(resultsSW1Y_test["ytrue"]) - 1):
     ytrue_last = ytrue_test[start_idx:end_idx]
     yhat_last = yhat_test[start_idx:end_idx]
 
-    # Calcula as métricas para os últimos dias
+    # Métricas
     rmse = mean_squared_error(ytrue_last, yhat_last, squared=False)
     mae = mean_absolute_error(ytrue_last, yhat_last)
     mape = mean_absolute_percentage_error(ytrue_last, yhat_last)
     r2 = r2_score(ytrue_last, yhat_last)
 
-    # Adiciona as métricas ao dicionário de pontuação
     scoringSW1Y["rmse"].append(rmse)
     scoringSW1Y["mae"].append(mae)
     scoringSW1Y["mape"].append(mape)
@@ -760,18 +740,16 @@ mae_mean = round(np.mean(scoringSW1Y["mae"]), 2)
 mape_mean = round((np.mean(scoringSW1Y["mape"]) * 100), 2)
 r2_mean = round(np.mean(scoringSW1Y["r2"]), 2)
 
-# Write test metrics to CSV file
 with open(metrics_file, "a") as f:
     f.write(
         f"ARIMA-SW1Y,{best_params_SW1Y},{rmse_mean},{mae_mean},{mape_mean},{r2_mean},test\n"
     )
 
-# Iterar sobre os resultados das janelas de teste
+# Escrever os valores reais e previstos em arquivo CSV
 for i in range(len(resultsSW1Y_test["ytrue"])):
     ytrue = resultsSW1Y_test["ytrue"][i]
     yhat = resultsSW1Y_test["yhat"][i]
 
-    # Escrever os valores reais e previstos em uma linha do arquivo CSV
     with open(values_file, "a") as f:
         for true, pred in zip(ytrue, yhat):
             f.write(f"ARIMA-SW1Y,{true},{pred}\n")
